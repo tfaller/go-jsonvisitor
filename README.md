@@ -1,4 +1,5 @@
 # go-jsonvisitor
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/tfaller/go-jsonvisitor)](https://pkg.go.dev/github.com/tfaller/go-jsonvisitor)
 
 jsonvisitor is here to simply visit all entries of a json
 document that was parsed like:
