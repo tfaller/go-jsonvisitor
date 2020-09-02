@@ -19,11 +19,15 @@ type VisitorFunc func(path []string, value interface{}) bool
 // map[string]interface{} and []interface{}. These are the results of json.Unmarshal() if
 // unmarshalled into interface{}
 func Visit(e interface{}, visitor VisitorFunc) {
-	traverse([]string{}, e, visitor)
+	VisitWithPath([]string{}, e, visitor)
 }
 
-// traverse traverses depth-first
-func traverse(path []string, entry interface{}, visitor VisitorFunc) {
+// VisitWithPath works like Visit, but a path prefix can be set.
+// This is useful if the visitor decides first stop to go depper
+// and than resumes the operation. To not lose the path information the
+// path can than be passed here. So basically a known path can be set,
+// if the here to visit entry is a part of a document.
+func VisitWithPath(path []string, entry interface{}, visitor VisitorFunc) {
 	if !visitor(path, entry) {
 		return
 	}
@@ -31,12 +35,12 @@ func traverse(path []string, entry interface{}, visitor VisitorFunc) {
 	// if it's an object ... traverse props
 	obj, _ := entry.(map[string]interface{})
 	for k, v := range obj {
-		traverse(append(path, k), v, visitor)
+		VisitWithPath(append(path, k), v, visitor)
 	}
 
 	// if it's an array ... traverse indices
 	arr, _ := entry.([]interface{})
 	for k, v := range arr {
-		traverse(append(path, fmt.Sprint(k)), v, visitor)
+		VisitWithPath(append(path, fmt.Sprint(k)), v, visitor)
 	}
 }
