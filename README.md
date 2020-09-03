@@ -24,3 +24,27 @@ a: 1
 b: [0]
 b.0: 0
 ```
+
+## PairVisit
+Visit two json documents at the same time - e.g. good for finding differences:
+
+```go
+var docA, docB interface{}
+json.Unmarshal([]byte(`{"a": 1, "b": [0, 1, 3]}`), &docA)
+json.Unmarshal([]byte(`{"a": 1, "b": [0], "c": 3}`), &docB)
+
+jsonvisitor.PairVisit(docA, docB, func(path []string, a, b interface{}) bool {
+	fmt.Printf("%v: %v <-> %v", strings.Join(path, "."), a, b)
+	return true
+})
+```
+The result:
+```
+: map[a:1 b:[0 1 3]] <-> map[a:1 b:[0] c:3]
+a: 1 <-> 1
+b: [0 1 3] <-> [0]
+b.0: 0 <-> 0
+b.1: 1 <-> Undefined
+b.2: 3 <-> Undefined
+c: Undefined <-> 3
+```
